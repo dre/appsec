@@ -1,0 +1,33 @@
+Sept 2, 2010
+
+If you want to generate hashes for testing then use the included PHP file via command line. This is the exact code that apps are using today. use it like this:
+
+    php PasswordHash.php -s test
+
+And the output should be something like:
+
+    #########################################################
+    Generated Hash for 'test' is: $P$BFUp8AKpog2b4AeaDJIqhwhqbDm3Gu.
+
+    Boolean response from check: 1 - Hash is good!
+    #########################################################
+
+So you would then copy/paste the hash ($P$BFUp8AKpog2b4AeaDJIqhwhqbDm3Gu.) to the file you pass in to the crack prog via the '-h' switch.
+
+If you want to see a usage statement just run the prog with no input arguments, as such:
+
+    python phpasscrack.py
+
+
+*** Notes ***
+
+- This prog is not perfect and I am sure it has its deficiencies. I wrote it in a very short time frame (2 days). But is seems to work well and has now been used in at least 2 real pen tests and the results have been positive. If you have suggestions for improvements then feel free to send them in.
+
+- This crack prog is not fancy in its current form, it is only as good as the dictionary you pass in via the '-d' switch.
+
+- I have a version that does automated generation of strings (this would replace or augment the passed in dictionary) in the form of a Cartesian Product. I did not include this because it is very intense (takes a long time and hogs up resources) if a large enough base of characters is used. I may revisit this in the future.
+
+
+*** Possible Upcoming Features ***
+
+- 1337 Speak variants of each string from the dictionary used
