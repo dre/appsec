@@ -249,12 +249,11 @@ class MacCloak(object):
         time.sleep(10)
  
     def useIfconfig(self, randomly=False):
-        ''' us ifconfig to take action on the interface '''
+        ''' use ifconfig to take action on the interface '''
         """
             either randomly or back to normal
         """
         if randomly == True:
-            #os.popen("ifconfig " + self.targetInterface + " hw ether " + randomMAC())
             randVal = self.randomMAC()
             self.setFakeMacAddress(val=randVal)
             print("[+] Changing your original MAC address (%s) to something totally random..." % self.getOriginalMacAddress())
