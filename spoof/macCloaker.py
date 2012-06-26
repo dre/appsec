@@ -3,7 +3,7 @@
     Contact:    <andres [at] neurofuzz dot com>
     Company:    neuroFuzz, LLC
     Date:       6/23/2012
-    Modified:   6/25/2012
+    Modified:   6/26/2012
     
     This software runs on certain flavors of Linux and
     Mac OSX (written on 10.7.x with python 2.6/2.7). 
@@ -28,7 +28,18 @@
     
     Usage:
     
-    sudo python macCloaker.py
+        sudo python macCloaker.py
+    
+    It stores a record of your MAC Address activity with
+    this tool in a file called: .originalMac
+    the data in there is structured as such:
+    
+        interface tab MAC_Address tab #pid#date/time_stamp
+    
+    where the pid is that of the prog run when that change
+    was made. An example:
+    
+        eth0    07:c8:6f:23:32:f0    #764#2012-06-25T23:49:15.405275 
     
     MIT-LICENSE
     Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
@@ -55,6 +66,10 @@
     If you use this for criminal purposes and get caught you are on
     your own and I am not liable. I wrote this for legit pen testing
     purposes.
+    
+    Be kewl and give credit where it is due if you use this. Also,
+    send me feedback as I don't have the bandwidth to test for every
+    condition or flavor of Linux under the Sun.
 """
 import os
 import fnmatch
@@ -232,12 +247,12 @@ class MacCloak(object):
     def useMacchanger(self):
         ''' us macchanger to take action on the interface '''
         
-        print("[+] Changing your original MAC address (%s) to something totally random..." % self.getOriginalMacAddress())
+        print("Changing your original MAC address (%s) to something totally random..." % self.getOriginalMacAddress())
         macchanger = self.which(program="macchanger")
         
         # Puts interface down
         if self.modInterfaceState(thestate='down'):
-            print("[*] Interface is %s" % 'down')
+            print("Interface is %s" % 'down')
         time.sleep(6)
         # change the MAC Address
         poutput = self.runOsProcess(lParams=[macchanger, "--random", self.targetInterface])
@@ -245,7 +260,7 @@ class MacCloak(object):
         self.setFakeMacAddress(val=poutput[poutput.index("Faked")+2])
         # Puts interface up
         if self.modInterfaceState(thestate='up'):
-            print("[*] Interface is %s" % 'up')
+            print("Interface is %s" % 'up')
         time.sleep(10)
  
     def useIfconfig(self, randomly=False):
@@ -256,7 +271,7 @@ class MacCloak(object):
         if randomly == True:
             randVal = self.randomMAC()
             self.setFakeMacAddress(val=randVal)
-            print("[+] Changing your original MAC address (%s) to something totally random..." % self.getOriginalMacAddress())
+            print("Changing your original MAC address (%s) to something totally random..." % self.getOriginalMacAddress())
             
             # on Linux - ifconfig en1 hw ether 00:e2:e3:e4:e5:e6
             if self.getRunningPlatform() == "linux":
@@ -269,7 +284,7 @@ class MacCloak(object):
                 this section sets the MAC Address back
                 to its normal and original setting
             """
-            print("[+] Changing your MAC address to its original value ... %s") % self.originalMacAddress
+            print("Changing your MAC address to its original value ... %s") % self.originalMacAddress
             # on Linux
             if self.getRunningPlatform() == "linux":
                 self.processLinux()
@@ -281,7 +296,7 @@ class MacCloak(object):
         ''' set MAC Address back to original state on Linux'''
         # Puts interface down
         if self.modInterfaceState(thestate='down'):
-            print("[*] Interface is %s" % 'down')
+            print("Interface is %s" % 'down')
         time.sleep(6)
         # change the MAC Address
         if randVal != None:
@@ -293,7 +308,7 @@ class MacCloak(object):
         
         # Puts interface up
         if self.modInterfaceState(thestate='up'):
-            print("[*] Interface is %s" % 'up')
+            print("Interface is %s" % 'up')
         time.sleep(10)
         
     def processDarwin(self, randVal=None):
@@ -308,11 +323,11 @@ class MacCloak(object):
         time.sleep(2)
         # Puts interface down
         if self.modInterfaceState(thestate='down'):
-            print("[*] Interface is %s" % 'down')
+            print("Interface is %s" % 'down')
         time.sleep(6)
         # Puts interface up
         if self.modInterfaceState(thestate='up'):
-            print("[*] Interface is %s" % 'up')
+            print("Interface is %s" % 'up')
         time.sleep(10)
         self.handleDhcpReset()
         
@@ -513,15 +528,15 @@ if __name__ == "__main__":
         iface = spoofmac.getIface()
         
         print("====================================================")
-        print "[*] The Current MAC address on interface '%s' is: '%s'" % (spoofmac.getInterface(),
-                                                                          spoofmac.getOriginalMacAddress())
+        print "The Current MAC address on interface '%s' is: '%s'" % (spoofmac.getInterface(),
+                                                                      spoofmac.getOriginalMacAddress())
    
         print "DHCP usage detection: %s" % spoofmac.getDhcpUsed()
         # change MAC Address
         print "Changing MAC Address to something random"
         spoofmac.modMac(randomly=True)
     
-        print("[*] Your New MAC address is: %s\n\n") % spoofmac.getFakeMacAddress()
+        print("Your New MAC address is: %s\n\n") % spoofmac.getFakeMacAddress()
         print "Now go do whatever it is you need to do with a spoofed MAC Address, wink wink\n\n"
         print "Press a key when you want to set the Mac back to normal"
         cr = raw_input("> ")
