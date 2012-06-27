@@ -3,7 +3,7 @@
     Contact:    <andres [at] neurofuzz dot com>
     Company:    neuroFuzz, LLC
     Date:       6/23/2012
-    Modified:   6/26/2012
+    Modified:   6/27/2012
     
     This software runs on certain flavors of Linux and
     Mac OSX (written on 10.7.x with python 2.6/2.7). 
@@ -44,6 +44,25 @@
     *** CAVEAT: currently some wireless adaptors do not enjoy this
     process and this process may fail. I will fix that when I have
     some time. Or maybe someone else steps up and does this. ***
+    
+    Some errors to be aware of when messing with MAC Addresses:
+    
+    SIOCSIFHWADDR: Operation not supported
+
+    indicates that the hardware address for the specified interface cannot be changed.
+    This could be because the interface does not have a hardware address, or because
+    the ability to change the address has not been implemented by the relevant device driver.
+
+    SIOCSIFHWADDR: Cannot assign requested address
+
+    probably indicates that the requested MAC address is not a unicast address.
+    (To qualify as a unicast address the first byte must be even.)
+
+    SIOCSIFHWADDR: Device or resource busy - you may need to down the interface
+
+    probably indicates that the relevant device driver does not allow the MAC 
+    address to be changed while the interface is up.
+    
     
     MIT-LICENSE
     Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
