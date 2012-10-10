@@ -35,7 +35,7 @@
     condition.    
 """
 from datetime import datetime, timedelta
-from libs import AntiIDS, SocketController, funcs, httplib2, slow_dos_tor
+from libs import AntiIDS, SocketController, funcs, httplib2, slow_ddos_tor
 from random import choice, shuffle
 from string import digits, letters
 from urlparse import urlparse
