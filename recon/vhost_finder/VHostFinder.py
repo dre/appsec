@@ -328,13 +328,13 @@ def setItOff(host="", port="", domain="", tld=""):
     print "\n" + name + " Finished"
     finish = time.time()
     funcs.sec_to_time(sec=(finish - start))
-    slow_dos_tor.killThreads()
+    slow_ddos_tor.killThreads()
     
 def setOffSlowDos(host="", port=""):
     name = multiprocessing.current_process().name
     slowdospid = os.getpid()
     print "\n\n" +  name + " Started with pid %d" % slowdospid
-    slow_dos_tor.kickOff(host=host, port=port, plist=sc.getPortList())
+    slow_ddos_tor.kickOff(host=host, port=port, plist=sc.getPortList())
     print name + " Finished"
 
 if __name__ == "__main__":
