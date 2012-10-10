@@ -57,6 +57,7 @@ class httpPost(Thread):
         self.uri = "/"
         self.torip = "127.0.0.1"
         self.stopped = False
+        self.sleepRange = [5, 30]
         self.choicePool = ''.join(map(chr, range(48, 58)) + map(chr, range(65, 91)) + map(chr, range(97, 123)))
         self.portlist = []
         Thread.__init__(self)
@@ -74,6 +75,7 @@ class httpPost(Thread):
         self.stopped = True
 
     def run(self):
+        sleep(choice(self.sleepRange))
         while not self.stopped:
             while not self.stopped:
                 try:
@@ -97,9 +99,16 @@ class httpPost(Thread):
     
             while not self.stopped:
                 try:
+                    #for i in range(0, 9999):
+                    # send some initial data
+                    s.send("abc=%s&def=" % choice(self.choicePool))
                     for i in range(0, 9999):
-                        s.send("abc=%s&" % choice(self.choicePool))
-                        sleep(random.uniform(0.1, 30))
+                        '''
+                            slowly send bits of data in so as
+                            to keep that socket active 
+                        '''
+                        sleep(choice(self.sleepRange))
+                        s.send("%s" % choice(self.choicePool))
                         s.close
                 except Exception, e:
                     if e.args[0] == 32 or e.args[0] == 104:
