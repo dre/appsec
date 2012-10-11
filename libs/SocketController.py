@@ -1,7 +1,8 @@
 """
     Author: Andres Andreu
     Company: neuroFuzz, LLC
-    Date: 10/10/2012
+    Date: 10/11/2012
+    Last Modified: 10/11/2012
     Prog to spawn off a number of instances of tor
 
     MIT-LICENSE
@@ -38,29 +39,24 @@ import socks
 import socket
 import subprocess
 from random import choice
+from vars import socket_controller_vars
 
 class SocketController:
     def __init__(self):
-        self.torpath = "/Applications/Vidalia.app/Contents/MacOS/tor"
-        self.base_socks_port = 9052
-        self.base_control_port = 8120
+        self.torpath = socket_controller_vars.getTorPath()
+        self.base_socks_port = socket_controller_vars.getBaseSocksPort()
+        self.base_control_port = socket_controller_vars.getBaseControlPort()
         self.socks_control_ports = {}
         self.socks_port_list = []
-        self.datadir = '/Users/andresandreu/software_engineering/appsec/recon/vhost_finder/tordata'
-        self.torfname = 'tor%sfile'
-        self.torarguments = {"--RunAsDaemon":'1',
-                             "--CookieAuthentication":'0',
-                             "--HashedControlPassword":'',
-                             "--ControlPort":'%s',
-                             "--PidFile":'tor%s.pid',
-                             "--SocksPort":'%s',
-                             "--DataDirectory":self.datadir + '/tor%s'
-                             }
-        self.torSocketLowerBound = 1
-        self.torSocketUpperBound = 5
+        self.datadir = socket_controller_vars.getDataDir()
+        self.torfname = socket_controller_vars.getTorFileName()
+        self.torarguments = socket_controller_vars.getTorArguments()
+        sbounds = socket_controller_vars.getSocketBounds()
+        self.torSocketLowerBound = sbounds[0]
+        self.torSocketUpperBound = sbounds[1]
         self.lastProxUsed = 0
-        self.debug = False
-        self.selfip = '127.0.0.1'
+        self.debug = socket_controller_vars.getDebug()
+        self.selfip = socket_controller_vars.getSocketIp()
         socket.setdefaulttimeout(10)
         
     def getPortList(self):

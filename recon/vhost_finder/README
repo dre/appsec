@@ -1,0 +1,3 @@
+Variables to be changed are in the 'vars' dir, the files should be self explanatory based on their respective names.
+
+main.py sets the PYTHONPATH env variable and this is necessary for the stuff in some directories (like 'libs') to reference stuff in other directories (such as 'vars').
