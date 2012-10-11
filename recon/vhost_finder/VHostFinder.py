@@ -2,6 +2,7 @@
     Author: Andres Andreu
     Company: neuroFuzz, LLC
     Date: 10/10/2012
+    Last Modified: 10/11/2012
     Prog written to do recon discovery of virtual hosts
     against a given target web server.
 
@@ -37,6 +38,7 @@
 """
 from datetime import datetime, timedelta
 from libs import AntiIDS, SocketController, funcs, httplib2, slow_ddos_tor
+from vars import vhost_finder_vars
 from random import choice, shuffle
 from string import digits, letters
 from urlparse import urlparse
@@ -51,15 +53,19 @@ import socket
 import time
 
 # vars
-debug = False
-anonimize = True
-#anonimize = False
+debug = vhost_finder_vars.getVHostDebug()
+anonimize = vhost_finder_vars.getAnonimize()
+displayThreshold = vhost_finder_vars.getDisplayThreshold()
 failedHosts = []
-displayThreshold = 500
-
 random.seed()
 
 if anonimize:
+    '''
+        TODO: write a function to see if those
+        sockets are already in use, if they are
+        we can do a tor ID refresh and get a 
+        different path out the other end
+    '''
     sc = SocketController.SocketController()
     sc.spawnSockets()
 
@@ -242,9 +248,12 @@ class VHostFinder:
         print "\nSetting baseline ...",
         """
             numbers are valid characters in a domain,
-            assuming no one would set the below domain as a given vhost of a server
-            therefore we assume this will produce a "vhost does not exist on this server" response
-            can also form a large random number to replace the static one below
+            assuming no one would set the below domain
+            as a given vhost of a server (even though that
+            would be interesting) ...
+            therefore we assume this will produce a 
+            "vhost does not exist on this server" response
+            TODO: form a large random number to replace the static one below
         """
         http_data = funcs.constructRequest(verb="GET", target="314159265358979323846264338327950288." + self.domain + "." + self.tld, resource="/")
         c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -321,14 +330,19 @@ def setItOff(host="", port="", domain="", tld=""):
     vhf.setDomain(domain)
     vhf.setTld(tld)
     vhf.setElements()
-    vhf.setDepth(1,1)
-    vhf.setTotalThreads(6)
+    bnds = vhost_finder_vars.getDepthBounds()
+    vhf.setDepth(bnds[0],bnds[1])
+    vhf.setTotalThreads(vhost_finder_vars.getVHostNumThreads())
     vhf.setBaseLine()
     vhf.probeVhosts()
 
     print "\n" + name + " Finished"
     finish = time.time()
     funcs.sec_to_time(sec=(finish - start))
+    '''
+        TODO: kill all the tor pids/sockets
+        if anonimize: ...        
+    '''
     slow_ddos_tor.killThreads()
     
 def setOffSlowDos(host="", port=""):
@@ -341,11 +355,11 @@ def setOffSlowDos(host="", port=""):
 if __name__ == "__main__":
     start = time.time()
     
-    tip = "127.0.0.1"
-    tport = 49001
-    tdomain = "targetdomain"
-    ttld = "com"
-    slowdos = False
+    tip = vhost_finder_vars.getTargetIp()
+    tport = vhost_finder_vars.getTargetPort()
+    tdomain = vhost_finder_vars.getTargetDomain()
+    ttld = vhost_finder_vars.getTargetTld()
+    slowdos = vhost_finder_vars.getUseSlowDoS()
 
     if slowdos:
         worker_slowDos = multiprocessing.Process(name='Slow Dos Attack', target=setOffSlowDos, args=(tip,tport))
