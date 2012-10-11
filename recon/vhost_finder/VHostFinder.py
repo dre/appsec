@@ -341,9 +341,9 @@ def setOffSlowDos(host="", port=""):
 if __name__ == "__main__":
     start = time.time()
     
-    tip = "98.113.35.235"
+    tip = "127.0.0.1"
     tport = 49001
-    tdomain = "bayshorenetworks"
+    tdomain = "targetdomain"
     ttld = "com"
     slowdos = False
 
