@@ -1,3 +1,25 @@
 Variables to be changed are in the 'vars' dir, the files should be self explanatory based on their respective names.
 
 main.py sets the PYTHONPATH env variable and this is necessary for the stuff in some directories (like 'libs') to reference stuff in other directories (such as 'vars').
+
+The anonymous feature is that which will use a pool of tor sockets and randmonly spray the data out via these sockets. So the target will see traffic from all kinds of disparate locations.
+
+The simultaneous Distributed Slow POST DoS feature will generate attack traffic to mask the actual virtual host recon process. This is no silver bullet but will force an analyst/protection product to be real good in order to figure out/block the recon process looking for virtual hosts. 
+
+Usage:
+
+- modify the variables in the files in the 'vars' dir:
+-- vhost_finder_vars.py
+-- socket_controller_vars.py
+
+To use the anonymous feature ... in vars/vhosy_finder_vars.py set:
+
+	anonimize = True
+
+To use the simultaneous Distributed Slow POST DoS feature, in vars/vhosy_finder_vars.py set:
+
+	useslowdos = True
+
+Go to the recon/vhost_finder directory:
+
+python main.py
