@@ -4,7 +4,7 @@
 # modifiable variables
 ########################################################
 host = "host"
-port = "port"
+port = 80
 threads = 100
 sleepTime = 1000
 uri = "/"
@@ -12,6 +12,7 @@ torip = "127.0.0.1"
 sleepLowerBound = 5
 sleepUpperBound = 30
 choicePool = ''.join(map(chr, range(48, 58)) + map(chr, range(65, 91)) + map(chr, range(97, 123)))
+hostheader = ""
 ########################################################
 
 def getHost():
@@ -31,6 +32,12 @@ def getTorIp():
 
 def getThreads():
     return threads
+
+def getHostHeader():
+    if len(hostheader) > 0:
+        return hostheader
+    else:
+        return None
 
 def getSleepBounds():
     return(sleepLowerBound,sleepUpperBound)
