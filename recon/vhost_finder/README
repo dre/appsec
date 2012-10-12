@@ -6,6 +6,8 @@ The anonymous feature is that which will use a pool of tor sockets and randmonly
 
 The simultaneous Distributed Slow POST DoS feature will generate attack traffic to mask the actual virtual host recon process. This is no silver bullet but will force an analyst/protection product to be real good in order to figure out/block the recon process looking for virtual hosts. 
 
+This prog requires the tor executable so it must be present and the full path set in the vars file: 'socket_controller_vars.py'
+
 Usage:
 
 - modify the variables in the files in the 'vars' dir:
