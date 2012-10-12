@@ -1,0 +1,21 @@
+Variables to be changed are in the 'vars' dir, the 2 files you should focus on for the Slow POST DDoS are:
+
+- slow_ddos_tor_vars.py
+- socket_controller_vars.py
+
+main.py sets the PYTHONPATH env variable and this is necessary for the stuff in some directories (like 'libs')
+to reference stuff in other directories (such as 'vars').
+
+This prog requires the tor executable so it must be present and the full path set in the vars file: 'socket_controller_vars.py'
+
+The Distributed Slow POST DDoS prog will generate attack traffic.
+Since tor is used the target will see traffic from all kinds of disparate locations (hence, 'distributed').
+
+
+Usage:
+
+- modify the variables in the 2 files referenced earlier.
+
+Go to the DoS/distributed_slow_post directory:
+
+python main.py

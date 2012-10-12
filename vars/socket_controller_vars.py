@@ -3,12 +3,17 @@
 """
 # modifiable variables
 ########################################################
-torpath = "/Applications/Vidalia.app/Contents/MacOS/tor"
+torpath = "/full/path/to/tor"
 base_socks_port = 9052
 base_control_port = 8120
 socketLowerBound = 1
-socketUpperBound = 5
-datadir = '/Users/andresandreu/software_engineering/appsec/recon/vhost_finder/tordata'
+socketUpperBound = 15
+'''
+    make sure the following path and directory
+    exist prior to run-time, will automate the
+    creation of this later ... no time now
+'''
+datadir = '/full/path/to/appsec/recon/vhost_finder/tordata'
 debug = False
 selfip = '127.0.0.1'
 torfname = 'tor%sfile'
