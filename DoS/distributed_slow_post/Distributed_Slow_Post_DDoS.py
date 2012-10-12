@@ -2,8 +2,9 @@
     Author: Andres Andreu
     Company: neuroFuzz, LLC
     Date: 10/12/2012
-    Main controller prog that sets PYTHONPATH and kicks off
-    the entire process.
+    Controller prog that spawns off the tor sockets via
+    the SocketController class and kicks off the actual
+    DDoS process leveraging those sockets.
 
     MIT-LICENSE
     Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
