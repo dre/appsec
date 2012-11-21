@@ -7,7 +7,7 @@
     against a given target web server.
 
     MIT-LICENSE
-    Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
+    Copyright (c) 2012 - 2013 Andres Andreu, neuroFuzz LLC
     
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -51,6 +51,8 @@ import random
 import re
 import socket
 import time
+import sys
+import glob
 
 # vars
 debug = vhost_finder_vars.getVHostDebug()
@@ -245,28 +247,46 @@ class VHostFinder:
     
     def setBaseLine(self):
         ''' get a baseline for a bad request '''
-        print "\nSetting baseline ...",
-        """
-            numbers are valid characters in a domain,
-            assuming no one would set the below domain
-            as a given vhost of a server (even though that
-            would be interesting) ...
-            therefore we assume this will produce a 
-            "vhost does not exist on this server" response
-            TODO: form a large random number to replace the static one below
-        """
-        http_data = funcs.constructRequest(verb="GET", target="314159265358979323846264338327950288." + self.domain + "." + self.tld, resource="/")
-        c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        c.connect((self.ipAddress, self.port))
-        c.send(http_data)
-        data = c.recv(1024*5)
-        c.close()
-        if debug:
-            print http_data
-            print data
-        
-        self.baseline = funcs.stripheader(data,self.includeinbaseline)
-        print self.baseline
+        try:
+            print "\nSetting baseline ...",
+            """
+                numbers are valid characters in a domain,
+                assuming no one would set the below domain
+                as a given vhost of a server (even though that
+                would be interesting) ...
+                therefore we assume this will produce a 
+                "vhost does not exist on this server" response
+                TODO: form a large random number to replace the static one below
+            """
+            http_data = funcs.constructRequest(verb="GET", target="314159265358979323846264338327950288." + self.domain + "." + self.tld, resource="/")
+            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            c.connect((self.ipAddress, self.port))
+            c.send(http_data)
+            data = c.recv(1024*5)
+            c.close()
+            if debug:
+                print http_data
+                print data
+            
+            self.baseline = funcs.stripheader(data,self.includeinbaseline)
+            print self.baseline
+        except:
+            print "\nError connecting, cleaning up\n\n"
+            # kill tor sockets we spun up
+            if anonimize:
+                '''
+                for p in sc.getTorPids():
+                    funcs.killPid(ppid=p)
+                '''
+                for dir,_,_ in os.walk(sc.getDataDir()):
+                    pidHandle = glob.glob(os.path.join(dir,'tor*.pid'))
+                    if pidHandle:
+                        funcs.killPid(ppid=int(open(pidHandle[0]).readline()))
+                print
+            slow_ddos_tor.killThreads()
+            print
+            sys.exit(0)
+            
 
     def probeVhosts(self):
         #status_match = re.compile("HTTP/1.[1|0] (\d)* (\w)*")
@@ -339,11 +359,17 @@ def setItOff(host="", port="", domain="", tld=""):
     print "\n" + name + " Finished"
     finish = time.time()
     funcs.sec_to_time(sec=(finish - start))
-    '''
-        TODO: kill all the tor pids/sockets
-        if anonimize: ...        
-    '''
+
+    # kill tor sockets we spun up
+    if anonimize:
+        for dir,_,_ in os.walk(sc.getDataDir()):
+            pidHandle = glob.glob(os.path.join(dir,'tor*.pid'))
+            if pidHandle:
+                funcs.killPid(ppid=int(open(pidHandle[0]).readline()))
+        print
+    # kill DDoS threads
     slow_ddos_tor.killThreads()
+    print
     
 def setOffSlowDos(host="", port=""):
     name = multiprocessing.current_process().name
