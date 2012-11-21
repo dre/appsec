@@ -13,7 +13,7 @@ vhost_finder_threads = 6
 vhost_finder_debug = False
 displayThreshold = 500
 depthLowerBound = 1
-depthUpperBound = 1
+depthUpperBound = 2
 ########################################################
 
 def getTargetIp():
