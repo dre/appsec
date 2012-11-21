@@ -39,6 +39,7 @@ import hashlib
 from datetime import datetime, timedelta
 from random import choice, randint, sample
 from AntiIDS import AntiIDS
+from string import letters
 
 aids = AntiIDS()
 def constructRequest(verb="", target="", resource="/"):
