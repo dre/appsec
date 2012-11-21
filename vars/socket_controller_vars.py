@@ -1,6 +1,8 @@
 """
     variables to be used by the SocketController class
 """
+from libs import funcs
+
 # modifiable variables
 ########################################################
 torpath = "/full/path/to/tor"
@@ -19,7 +21,7 @@ selfip = '127.0.0.1'
 torfname = 'tor%sfile'
 torarguments = {"--RunAsDaemon":'1',
                 "--CookieAuthentication":'0',
-                "--HashedControlPassword":'',
+                "--HashedControlPassword":funcs.createTorPassword(secret=funcs.createRandAlpha(length=5)),
                 "--ControlPort":'%s',
                 "--PidFile":'tor%s.pid',
                 "--SocksPort":'%s',

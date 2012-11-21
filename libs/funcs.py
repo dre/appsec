@@ -5,7 +5,7 @@
     Some functions ...
 
     MIT-LICENSE
-    Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
+    Copyright (c) 2012 - 2013 Andres Andreu, neuroFuzz LLC
     
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -36,9 +36,13 @@
 """
 import random
 import hashlib
+import os
+import binascii
+import signal
 from datetime import datetime, timedelta
 from random import choice, randint, sample
 from AntiIDS import AntiIDS
+from string import letters
 
 aids = AntiIDS()
 def constructRequest(verb="", target="", resource="/"):
@@ -106,6 +110,44 @@ def outStatement(val="", result="Good", extra=None):
         
 def createRandAlpha(length=0):
     return ''.join(choice(letters) for x in xrange(length or randint(10, 30)))
+
+''' based on https://gist.github.com/3962751 '''
+def createTorPassword(secret = ""):
+    ind = chr(96)
+    
+    # for salt
+    rng = os.urandom
+    # generate salt and append indicator value so that it
+    salt = "%s%s" % (rng(8), ind)
+    
+    prefix = '16:'
+    c = ord(salt[8])
+    
+    EXPBIAS = 6
+    count = (16+(c&15)) << ((c>>4) + EXPBIAS)
+    
+    d = hashlib.sha1()
+    tmp = salt[:8]+secret
+    
+    '''
+        hash the salty password as many times as the length of
+        the password divides into the count value
+    '''
+    slen = len(tmp)
+    while count:
+      if count > slen:
+        d.update(tmp)
+        count -= slen
+      else:
+        d.update(tmp[:count])
+        count = 0
+    hashed = d.digest()
+    # convert to hex
+    salt = binascii.b2a_hex(salt[:8]).upper()
+    ind = binascii.b2a_hex(ind)
+    torhash = binascii.b2a_hex(hashed).upper()
+    
+    return prefix + salt + ind + torhash
 
 def getTimeStamp():
 
@@ -202,3 +244,7 @@ def getRandUserAgent():
                "YahooSeeker/1.2 (compatible; Mozilla 4.0; MSIE 5.5; yahooseeker at yahoo-inc dot com ; http://help.yahoo.com/help/us/shop/merchant/)"
                ]
     return random.sample(headers, 1)[0]
+
+def killPid(ppid=0):
+    print "Killing PID %d" % ppid
+    os.kill(int(ppid), signal.SIGTERM)

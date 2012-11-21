@@ -8,7 +8,7 @@
     randomly chosen SOCKS5 sockets leveraging tor
 
     MIT-LICENSE
-    Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
+    Copyright (c) 2012 - 2013 Andres Andreu, neuroFuzz LLC
     
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),

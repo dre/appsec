@@ -6,7 +6,7 @@
     Prog to spawn off a number of instances of tor
 
     MIT-LICENSE
-    Copyright (c) 2012 Andres Andreu, neuroFuzz LLC
+    Copyright (c) 2012 - 2013 Andres Andreu, neuroFuzz LLC
     
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -48,6 +48,7 @@ class SocketController:
         self.base_control_port = socket_controller_vars.getBaseControlPort()
         self.socks_control_ports = {}
         self.socks_port_list = []
+        self.pids = []
         self.datadir = socket_controller_vars.getDataDir()
         self.torfname = socket_controller_vars.getTorFileName()
         self.torarguments = socket_controller_vars.getTorArguments()
@@ -76,6 +77,9 @@ class SocketController:
     
     def setDebug(self, val=""):
         self.debug = val
+        
+    def getDataDir(self):
+        return self.datadir
         
     def spawnSockets(self):
         '''
@@ -142,7 +146,12 @@ class SocketController:
                     --SocksPort 9056 
                     --DataDirectory data/tor4
             '''
-            subprocess.Popen(runstmt)
+            sp = subprocess.Popen(runstmt)
+            self.pids.append(sp.pid)
+            
+    def getTorPids(self):
+        if self.pids:
+            return self.pids
             
     def setSocksProx(self):
         prot = int(choice(self.socks_port_list))
