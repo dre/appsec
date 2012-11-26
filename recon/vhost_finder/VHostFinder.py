@@ -2,7 +2,7 @@
     Author: Andres Andreu
     Company: neuroFuzz, LLC
     Date: 10/10/2012
-    Last Modified: 10/11/2012
+    Last Modified: 11/22/2012
     Prog written to do recon discovery of virtual hosts
     against a given target web server.
 
@@ -62,12 +62,6 @@ failedHosts = []
 random.seed()
 
 if anonimize:
-    '''
-        TODO: write a function to see if those
-        sockets are already in use, if they are
-        we can do a tor ID refresh and get a 
-        different path out the other end
-    '''
     sc = SocketController.SocketController()
     sc.spawnSockets()
 
@@ -75,6 +69,8 @@ class Counter:
     def __init__(self):
         self.lock = threading.Lock()
         self.value = 0
+        self.total = 0
+        self.outPoint = 0
 
     def increment(self):
         self.lock.acquire() # critical section
@@ -86,6 +82,19 @@ class Counter:
         self.value = self.value + value
         self.lock.release()
         return self.value
+    
+    def setTotal(self, total=0):
+        self.total = total
+        if total < 2000:
+            self.outPoint = int((1.0 * total / 400) * 100)
+        else:
+            self.outPoint = 2000
+        
+    def getTotal(self):
+        return self.total
+    
+    def getOutPoint(self):
+        return self.outPoint
 
 class ThreadUrl(threading.Thread):
     ''' Threaded Url Grab '''
@@ -154,14 +163,14 @@ class ThreadUrl(threading.Thread):
                     if debug:
                         print "I think this exists: %s" % host
                         print data
-                    self.foundvhosts.append(host)
+                    if host not in self.foundvhosts:
+                        self.foundvhosts.append(host)
 
-                self.localcounter += 1
-                if self.localcounter == 500:
-                    value = self.counter.add(self.localcounter)
-                    if value % 10000 == 0:
-                        print "Tested %s vhosts, up to vhost: '%s'" % (str(value),host)
-                    self.localcounter = 0
+                val = self.counter.add(1)
+                if val % self.counter.getOutPoint() == 0:
+                    print "Tested %s vhosts, last checked: '%s' - %s %s" % (str(val),host, 
+                                                                            '-'.join(funcs.getTimeStamp().split('.')[0:3]),
+                                                                            ':'.join(funcs.getTimeStamp().split('.')[3:]))
             except socket.error, err:
                 if c:
                     c.close()
@@ -206,6 +215,7 @@ class VHostFinder:
             #headers to include in baseline, location might not be a good idea
             self.includeinbaseline = ['HTTP','Server','Content-Type','Content-Length','Location']
             self.redirect_targets = []
+            self.totalHostsToTry = 0
             
     def setIPAddress(self, ip=""):
         if ip:
@@ -290,6 +300,7 @@ class VHostFinder:
 
     def probeVhosts(self):
         #status_match = re.compile("HTTP/1.[1|0] (\d)* (\w)*")
+        vhosts = []
         """
             start the threads
             populate the queue
@@ -310,8 +321,18 @@ class VHostFinder:
             shuffle(self.elements)
             #generates iterator with given dictionary of "r" depth
             for vhost in itertools.product(self.elements,repeat=r):
-                targ = "".join(vhost) + "." + self.domain + "." + self.tld                
+                vhosts.append("".join(vhost))
+            self.totalHostsToTry = len(vhosts)
+            self.counter.setTotal(total=self.totalHostsToTry)
+            if r == self.high:
+                print "\nTotal hosts to try: %d\n" % self.totalHostsToTry
+
+            #for vhost in itertools.product(self.elements,repeat=r):
+            for vhost in vhosts:
+                #targ = "".join(vhost) + "." + self.domain + "." + self.tld
+                targ = vhost + "." + self.domain + "." + self.tld
                 self.queue.put(targ)
+
         #wait for queue of hosts to be empty
         self.queue.join()
         '''

