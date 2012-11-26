@@ -246,5 +246,8 @@ def getRandUserAgent():
     return random.sample(headers, 1)[0]
 
 def killPid(ppid=0):
-    print "Killing PID %d" % ppid
-    os.kill(int(ppid), signal.SIGTERM)
+    try:
+        print "Killing PID %d" % ppid
+        os.kill(int(ppid), signal.SIGTERM)
+    except OSError:
+        pass
