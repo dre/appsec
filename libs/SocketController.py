@@ -2,7 +2,7 @@
     Author: Andres Andreu
     Company: neuroFuzz, LLC
     Date: 10/11/2012
-    Last Modified: 10/11/2012
+    Last Modified: 11/19/2012
     Prog to spawn off a number of instances of tor
 
     MIT-LICENSE
@@ -140,7 +140,7 @@ class SocketController:
                 
                 tor --RunAsDaemon 1 
                     --CookieAuthentication 0 
-                    --HashedControlPassword "" 
+                    --HashedControlPassword 16:3209E94C0EEF6A9660D0645B037E16730B553C627462CD233F33B0F950
                     --ControlPort 8124
                     --PidFile tor4.pid 
                     --SocksPort 9056 
